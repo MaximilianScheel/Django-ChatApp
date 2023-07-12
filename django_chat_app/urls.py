@@ -1,8 +1,7 @@
-"""
-URL configuration for django_chat_app project.
+"""django_chat_app URL Configuration
 
 The `urlpatterns` list routes URLs to views. For more information please see:
-    https://docs.djangoproject.com/en/4.2/topics/http/urls/
+    https://docs.djangoproject.com/en/3.2/topics/http/urls/
 Examples:
 Function views
     1. Add an import:  from my_app import views
@@ -18,11 +17,16 @@ from django.contrib import admin
 from django.urls import path
 
 from chat.views import index, login_view
+from django.conf.urls.static import static
+from django_chat_app import settings
+from django.contrib.staticfiles.urls import staticfiles_urlpatterns
 
-
+def trigger_error(request):
+    division_by_zero = 1 / 0
 
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('chat/', index),
-    path('login/', login_view)
-]
+    path('login/', login_view),
+    path('sentry-debug/', trigger_error),
+] + staticfiles_urlpatterns()

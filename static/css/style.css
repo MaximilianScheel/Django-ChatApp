@@ -1,0 +1,16 @@
+.page-content {
+    padding: 50px 50px;
+    margin: 20px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+  }
+  
+  .color-grey { 
+    color: #ccc;
+  }
+  
+  .flex {
+    display: flex;
+    flex-direction: column;
+    margin-bottom: 1rem;
+  }
