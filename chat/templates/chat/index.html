@@ -1,18 +1,56 @@
-{% extends "base.html" %} {% block content %}
+{% extends 'base.html' %} {% block content %}
   {% if request.user.is_authenticated %}
-    {% for message in messages %}
-      <div class="flex">
-        <p class="color-grey">{{ message.created_at }}</p>
-        <div class="flex">{{ message.author.first_name }}: {{ message.text }}</div>
-      </div>
-    {% endfor %}
+    <div id="messageContainer">
+      {% for message in messages %}
+        <div class="flex">
+          <p class="color-grey">{{ message.created_at }}</p>
+          <div class="flex">{{ message.author.first_name }}: {{ message.text }}</div>
+        </div>
+      {% endfor %}
+    </div>
     <!-- Accent-colored raised button with ripple -->
     <!-- Simple Textfield -->
-    <form action="/chat/" method="post">
+    <script>
+      async function sendMessage() {
+        let form = new FormData()
+        form.append('textmessage', messageField.value)
+        form.append('csrfmiddlewaretoken', '{{ csrf_token }}')
+        try {
+          messageContainer.innerHTML += `
+                <div id="deleteMessage" class="flex">
+                  <p class="color-grey">${new Date().toLocaleString()}</p>
+                  <div class="flex color-grey">{{ request.user.first_name }}: ${messageField.value}</div>
+                </div>
+                `
+          let response = await fetch('/chat/', {
+            method: 'POST',
+            body: form
+          });
+          let json = await response.json();
+          console.log(json);
+
+
+          document.getElementById('deleteMessage').remove();
+          messageContainer.innerHTML += `
+          <div class="flex">
+            <p class="color-grey">${new Date().toLocaleString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })}</p>
+            <div class="flex">{{ request.user.first_name }}: ${messageField.value}</div>
+          </div>
+          `
+          messageField.value = '' 
+        
+          console.log('Success')
+        } catch (error) {
+          console.error(error)
+        }
+      }
+    </script>
+
+    <form onsubmit="sendMessage(); return false;" method="post">
       {% csrf_token %}
       <div class="mdl-textfield mdl-js-textfield">
-        <input class="mdl-textfield__input" name="textmessage" type="text" id="sample1" />
-        <label class="mdl-textfield__label" for="sample1">Text...</label>
+        <input class="mdl-textfield__input" name="textmessage" type="text" id="messageField" />
+        <label class="mdl-textfield__label" for="messageField">Text...</label>
       </div>
       <button class="mdl-button mdl-js-button mdl-button--raised mdl-js-ripple-effect mdl-button--accent">Send</button>
     </form>
